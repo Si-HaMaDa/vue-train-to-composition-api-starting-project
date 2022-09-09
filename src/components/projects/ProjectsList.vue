@@ -5,9 +5,17 @@
       @search="updateSearch"
       :search-term="enteredSearchTerm"
     ></base-search>
+    <div v-if="hasProjects">
+      <button @click="sort('asc')" :class="{ selected: sorting === 'asc' }">
+        Sort Ascending
+      </button>
+      <button @click="sort('desc')" :class="{ selected: sorting === 'desc' }">
+        Sort Descending
+      </button>
+    </div>
     <ul v-if="hasProjects">
       <project-item
-        v-for="prj in availableProjects"
+        v-for="prj in displayedProjects"
         :key="prj.id"
         :title="prj.title"
       ></project-item>
@@ -125,6 +133,7 @@ export default {
 </script> -->
 <script setup>
 import { computed, ref, toRefs, watch } from 'vue';
+import useSort from '../../hooks/sort.js';
 import ProjectItem from './ProjectItem.vue';
 
 const props = defineProps(['user']);
@@ -140,6 +149,12 @@ const availableProjects = computed(() => {
   }
   return props.user.projects;
 });
+
+const {
+  sorting,
+  displayedItems: displayedProjects,
+  sort,
+} = useSort(availableProjects, 'title');
 
 const { user } = toRefs(props);
 watch(
