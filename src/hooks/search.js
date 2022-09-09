@@ -12,7 +12,9 @@ export default function useSearch(items, searchProp) {
     let searchedItems = [];
     if (activeSearchTerm.value) {
       searchedItems = items.value.filter((item) =>
-        item[searchProp].includes(activeSearchTerm.value)
+        item[searchProp]
+          .toLowerCase()
+          .includes(activeSearchTerm.value.toLowerCase())
       );
     } else if (items.value) {
       searchedItems = items.value;
