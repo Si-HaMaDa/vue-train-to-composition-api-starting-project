@@ -1,9 +1,16 @@
 <template>
   <base-container v-if="user">
     <h2>{{ user.fullName }}: Projects</h2>
-    <base-search v-if="hasProjects" @search="updateSearch" :search-term="enteredSearchTerm"></base-search>
+    <base-search
+      @search="updateSearch"
+      :search-term="enteredSearchTerm"
+    ></base-search>
     <ul v-if="hasProjects">
-      <project-item v-for="prj in availableProjects" :key="prj.id" :title="prj.title"></project-item>
+      <project-item
+        v-for="prj in availableProjects"
+        :key="prj.id"
+        :title="prj.title"
+      ></project-item>
     </ul>
     <h3 v-else>No projects found.</h3>
   </base-container>
@@ -12,7 +19,7 @@
   </base-container>
 </template>
 
-<script>
+<!-- <script>
 import ProjectItem from './ProjectItem.vue';
 
 export default {
@@ -53,8 +60,66 @@ export default {
       }, 300);
     },
     user() {
+      console.log('WU');
       this.enteredSearchTerm = '';
     },
+  },
+};
+</script> -->
+<script>
+import { computed, ref, toRefs, watch } from 'vue';
+import ProjectItem from './ProjectItem.vue';
+
+export default {
+  components: {
+    ProjectItem,
+  },
+  props: ['user'],
+  setup(props, context) {
+    console.log(context);
+
+    const enteredSearchTerm = ref('');
+    const activeSearchTerm = ref('');
+    const { user } = toRefs(props);
+
+    function updateSearch(val) {
+      enteredSearchTerm.value = val;
+    }
+
+    watch(enteredSearchTerm, (val) => {
+      setTimeout(() => {
+        if (val === enteredSearchTerm.value) {
+          activeSearchTerm.value = val;
+        }
+      }, 300);
+    });
+
+    const availableProjects = computed(() => {
+      if (activeSearchTerm.value) {
+        return user.value.projects.filter((prj) =>
+          prj.title.includes(activeSearchTerm.value)
+        );
+      }
+      return user.value.projects;
+    });
+    const hasProjects = computed(() => {
+      return user.value.projects && availableProjects.value.length > 0;
+    });
+
+    watch(
+      // () => props.user,
+      user,
+      () => {
+        enteredSearchTerm.value = '';
+      }
+    );
+
+    return {
+      enteredSearchTerm,
+      availableProjects,
+      hasProjects,
+      updateSearch,
+    };
   },
 };
 </script>
