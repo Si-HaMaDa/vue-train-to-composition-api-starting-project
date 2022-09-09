@@ -4,10 +4,16 @@
   </li>
 </template>
 
-<script>
+<!-- <script>
 export default {
   props: ['title'],
 };
+</script> -->
+<script setup>
+// eslint-disable-next-line
+const props = defineProps({
+  title: String,
+});
 </script>
 
 <style scoped>

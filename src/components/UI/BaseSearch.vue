@@ -1,10 +1,15 @@
 <template>
   <form>
-    <input type="search" @input="search" :value="searchTerm" placeholder="Filter items" />
+    <input
+      type="search"
+      @input="search"
+      :value="searchTerm"
+      placeholder="Filter items"
+    />
   </form>
 </template>
 
-<script>
+<!-- <script>
 export default {
   props: ['searchTerm'],
   emits: ['search'],
@@ -14,6 +19,16 @@ export default {
     },
   },
 };
+</script> -->
+<script setup>
+// eslint-disable-next-line
+const props = defineProps(['searchTerm']);
+// eslint-disable-next-line
+const emit = defineEmits(['search']);
+
+function search(event) {
+  emit('search', event.target.value);
+}
 </script>
 
 <style scoped>

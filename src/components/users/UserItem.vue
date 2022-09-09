@@ -5,7 +5,7 @@
   </li>
 </template>
 
-<script>
+<!-- <script>
 export default {
   props: ['id', 'userName'],
   emits: ['list-projects'],
@@ -15,6 +15,14 @@ export default {
     },
   },
 };
+</script> -->
+<script setup>
+const props = defineProps(['id', 'userName']);
+const emit = defineEmits(['list-projects']);
+
+function viewProjects() {
+  emit('list-projects', props.id);
+}
 </script>
 
 <style scoped>

@@ -66,7 +66,7 @@ export default {
   },
 };
 </script> -->
-<script>
+<!-- <script>
 import { computed, ref, toRefs, watch } from 'vue';
 import ProjectItem from './ProjectItem.vue';
 
@@ -122,6 +122,48 @@ export default {
     };
   },
 };
+</script> -->
+<script setup>
+import { computed, ref, toRefs, watch } from 'vue';
+import ProjectItem from './ProjectItem.vue';
+
+const props = defineProps(['user']);
+
+const hasProjects = computed(() => {
+  return props.user.projects && availableProjects.value.length > 0;
+});
+const availableProjects = computed(() => {
+  if (activeSearchTerm.value) {
+    return props.user.projects.filter((prj) =>
+      prj.title.includes(activeSearchTerm.value)
+    );
+  }
+  return props.user.projects;
+});
+
+const { user } = toRefs(props);
+watch(
+  // () => props.user,
+  user,
+  () => {
+    enteredSearchTerm.value = '';
+  }
+);
+
+const enteredSearchTerm = ref('');
+const activeSearchTerm = ref('');
+
+function updateSearch(val) {
+  enteredSearchTerm.value = val;
+}
+
+watch(enteredSearchTerm, (val) => {
+  setTimeout(() => {
+    if (val === enteredSearchTerm.value) {
+      activeSearchTerm.value = val;
+    }
+  }, 300);
+});
 </script>
 
 <style scoped>
