@@ -89,44 +89,25 @@ export default {
 };
 </script> -->
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { toRefs } from 'vue';
+import useSearch from '../../hooks/search.js';
 import useSort from '../../hooks/sort.js';
 
 import UserItem from './UserItem.vue';
 
-const enteredSearchTerm = ref('');
-const activeSearchTerm = ref('');
-
 const props = defineProps(['users']);
+const { users } = toRefs(props);
 
-const availableUsers = computed(() => {
-  let users = [];
-  if (activeSearchTerm.value) {
-    users = props.users.filter((usr) =>
-      usr.fullName.includes(activeSearchTerm.value)
-    );
-  } else if (props.users) {
-    users = props.users;
-  }
-  return users;
-});
+const { enteredSearchTerm, availableItems, updateSearch } = useSearch(
+  users,
+  'fullName'
+);
 
 const {
   sorting,
   displayedItems: displayedUsers,
   sort,
-} = useSort(availableUsers, 'fullName');
-
-function updateSearch(val) {
-  enteredSearchTerm.value = val;
-}
-watch(enteredSearchTerm, (val) => {
-  setTimeout(() => {
-    if (val === enteredSearchTerm.value) {
-      activeSearchTerm.value = val;
-    }
-  }, 300);
-});
+} = useSort(availableItems, 'fullName');
 </script>
 
 <style scoped>

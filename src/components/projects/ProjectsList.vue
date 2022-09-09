@@ -68,7 +68,6 @@ export default {
       }, 300);
     },
     user() {
-      console.log('WU');
       this.enteredSearchTerm = '';
     },
   },
@@ -84,8 +83,6 @@ export default {
   },
   props: ['user'],
   setup(props, context) {
-    console.log(context);
-
     const enteredSearchTerm = ref('');
     const activeSearchTerm = ref('');
     const { user } = toRefs(props);
@@ -132,53 +129,38 @@ export default {
 };
 </script> -->
 <script setup>
-import { computed, ref, toRefs, watch } from 'vue';
+import { computed, toRefs, watch } from 'vue';
+import useSearch from '../../hooks/search.js';
 import useSort from '../../hooks/sort.js';
 import ProjectItem from './ProjectItem.vue';
 
 const props = defineProps(['user']);
+const { user } = toRefs(props);
 
-const hasProjects = computed(() => {
-  return props.user.projects && availableProjects.value.length > 0;
+const projects = computed(function () {
+  return user.value ? user.value.projects : [];
 });
-const availableProjects = computed(() => {
-  if (activeSearchTerm.value) {
-    return props.user.projects.filter((prj) =>
-      prj.title.includes(activeSearchTerm.value)
-    );
+
+const {
+  enteredSearchTerm,
+  availableItems,
+  updateSearch,
+  hasItems: hasProjects,
+} = useSearch(projects, 'title');
+
+watch(
+  // () => props.user,
+  user,
+  () => {
+    updateSearch('');
   }
-  return props.user.projects;
-});
+);
 
 const {
   sorting,
   displayedItems: displayedProjects,
   sort,
-} = useSort(availableProjects, 'title');
-
-const { user } = toRefs(props);
-watch(
-  // () => props.user,
-  user,
-  () => {
-    enteredSearchTerm.value = '';
-  }
-);
-
-const enteredSearchTerm = ref('');
-const activeSearchTerm = ref('');
-
-function updateSearch(val) {
-  enteredSearchTerm.value = val;
-}
-
-watch(enteredSearchTerm, (val) => {
-  setTimeout(() => {
-    if (val === enteredSearchTerm.value) {
-      activeSearchTerm.value = val;
-    }
-  }, 300);
-});
+} = useSort(availableItems, 'title');
 </script>
 
 <style scoped>
